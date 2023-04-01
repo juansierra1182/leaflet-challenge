@@ -51,27 +51,17 @@ function chooseColor(mag) {
 // Set up the legend.
 let legend = L.control({ position: "bottomright" });
 legend.onAdd = function() {
-  let div = L.DomUtil.create("div", "info legend");
-  let limits = geojson.options.limits;
-  let colors = geojson.options.colors;
-  let labels = [];
+  let grades = [0,2.5,4,5.5,8]
+  let colors =["Chartreuse","DarkGreen","yellow","orange","red"]
 
-  // Add the minimum and maximum.
-  let legendInfo = "<h1>Population with Children<br />(ages 6-17)</h1>" +
-    "<div class=\"labels\">" +
-      "<div class=\"min\">" + limits[0] + "</div>" +
-      "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-    "</div>";
+  for (i = 0; i < grades.length; i++) {
+    div.innerHTML += "<i style = 'background' " + colors[i] + "></i>"+ grades[i] +(grades[i+1] ? "&ndash;"+grades[i+1]+"<br>":"+");
+  }
 
-  div.innerHTML = legendInfo;
-
-  limits.forEach(function(limit, index) {
-    labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-  });
-
-  div.innerHTML += "<ul>" + labels.join("") + "</ul>";
   return div;
 };
+
+legend.addTo(myMap);
 
 // Create map
 function createMap(earthquakes) {
@@ -107,5 +97,5 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
-  legend.addTo(myMap);
+
 }
