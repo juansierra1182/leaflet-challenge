@@ -1,5 +1,6 @@
 // Store our API endpoing as queryURL
 var queryURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+var tectonicplatesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 
 // Perform a GET request to the query URL
@@ -35,7 +36,7 @@ function createFeatures(earthquakeData){
     });
 
     // Send earthquakes layer to the createMap function - will start creating the map and add features
-    createMap(earthquakes);
+  createMap(earthquakes);
 }
 
 // Circles color palette based on mag (feature) data marker: data markers should reflect the magnitude of the earthquake by their size and the depth of the earthquake by color. Earthquakes with higher magnitudes should appear larger, and earthquakes with greater depth should appear darker in color.
@@ -62,8 +63,16 @@ legend.onAdd = function() {
   return div;
 };
 
-  // Add the info legend to the map.
-legend.addTo(myMap);
+  // Get the tectonic plate data from tectonicplatesURL
+  var tectonicplates = L.layerGroup();
+  
+  d3.json(tectonicplatesURL, function(data) {
+    L.geoJSON(data, {
+      color: "orange",
+      weight: 2
+    }).addTo(tectonicplates);
+    tectonicplates.addTo(myMap);
+  });
 
 // Create map
 function createMap(earthquakes) {
@@ -84,7 +93,8 @@ function createMap(earthquakes) {
 
   // Create overlay object to hold our overlay layer
   let overlayMaps = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    "Tectonic Plates": tectonicplates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -99,5 +109,5 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
-
+  legend.addTo(myMap);
 }
