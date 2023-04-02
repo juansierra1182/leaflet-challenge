@@ -54,10 +54,10 @@ let legend = L.control({ position: "bottomright" });
 legend.onAdd = function() {
   var div = L.DomUtil.create('div', 'info legend');
   var grades = [0,2.5,4,5.5,8];
-  let colors =["Chartreuse","DarkGreen","yellow","orange","red"];
+  //let colors =["Chartreuse","DarkGreen","yellow","orange","red"];
 
   for (var i = 0; i < grades.length; i++) {
-    div.innerHTML += "<i style = 'background' " + colors[i] + "></i>"+ grades[i] +(grades[i+1] ? "&ndash;"+grades[i+1]+"<br>":"+");
+    div.innerHTML += "<i style = 'background' " + chooseColor(grades[i+1]) + "></i>"+ grades[i] +(grades[i+1] ? "&ndash;"+grades[i+1]+"<br>":"+");
   }
 
   return div;
