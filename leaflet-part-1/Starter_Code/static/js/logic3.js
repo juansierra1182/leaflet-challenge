@@ -1,6 +1,5 @@
 // Store our API endpoing as queryURL
 var queryURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-var tectonicplatesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 
 // Perform a GET request to the query URL
@@ -36,7 +35,7 @@ function createFeatures(earthquakeData){
     });
 
     // Send earthquakes layer to the createMap function - will start creating the map and add features
-  createMap(earthquakes);
+    createMap(earthquakes);
 }
 
 // Circles color palette based on mag (feature) data marker: data markers should reflect the magnitude of the earthquake by their size and the depth of the earthquake by color. Earthquakes with higher magnitudes should appear larger, and earthquakes with greater depth should appear darker in color.
@@ -49,30 +48,29 @@ function chooseColor(mag) {
   else return "red";
 }
 
-// Set up the legend.
-let legend = L.control({ position: "bottomright" });
+// Create map legend to provide context for map data
+let legend = L.control({position: 'bottomright'});
+
 legend.onAdd = function() {
-  var div = L.DomUtil.create('div', 'info legend');
-  var grades = [0,2.5,4,5.5,8];
-  //let colors =["Chartreuse","DarkGreen","yellow","orange","red"];
+    var div = L.DomUtil.create('div', 'info legend');
+    var grades = [0, 2.5, 4.0, 5.5, 8.0];
+    var labels = [];
+    var legendInfo = "<h4>Magnitude</h4>";
 
-  for (var i = 0; i < grades.length; i++) {
-    div.innerHTML += "<i style = 'background' " + chooseColor(grades[i+1]) + "></i>"+ grades[i] +(grades[i+1] ? "&ndash;"+grades[i+1]+"<br>":"+");
-  }
+    div.innerHTML = legendInfo
 
-  return div;
-};
+    // go through each magnitude item to label and color the legend
+    // push to labels array as list item
+    for (var i = 0; i < grades.length; i++) {
+          labels.push('<ul style="background-color:' + chooseColor(grades[i] + 1) + '"> <span>' + grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '' : '+') + '</span></ul>');
+        }
 
-  // Get the tectonic plate data from tectonicplatesURL
-  var tectonicplates = L.layerGroup();
-  
-  d3.json(tectonicplatesURL, function(data) {
-    L.geoJSON(data, {
-      color: "orange",
-      weight: 2
-    }).addTo(tectonicplates);
-    tectonicplates.addTo(myMap);
-  });
+      // add each label list item to the div under the <ul> tag
+      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    
+    return div;
+  };
+
 
 // Create map
 function createMap(earthquakes) {
@@ -93,8 +91,7 @@ function createMap(earthquakes) {
 
   // Create overlay object to hold our overlay layer
   let overlayMaps = {
-    Earthquakes: earthquakes,
-    "Tectonic Plates": tectonicplates
+    Earthquakes: earthquakes
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
